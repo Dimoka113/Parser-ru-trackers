@@ -66,6 +66,11 @@ def main(only_check=False, custom_post=None):
 
 if __name__ == "__main__":
     FORUM_ID = 54
-    low_seed_ids = get_low_seed_topic_ids(FORUM_ID)
-    print(f"Найдено тем с сидами < {SEEDS_LIMIT}: {len(low_seed_ids)}")
-    main(False, low_seed_ids) # Если истина, только проверка и добавление уже существуюзих торрентов в json
+    check = False # Если истина, только проверка и добавление уже существуюзих торрентов в json
+    if not check and FORUM_ID != 0:
+        FORUM_ID = 54
+        low_seed_ids = get_low_seed_topic_ids(FORUM_ID)
+        print(f"Найдено тем с сидами < {SEEDS_LIMIT}: {len(low_seed_ids)}")
+        main(check, low_seed_ids) 
+    else:
+        main(check)
