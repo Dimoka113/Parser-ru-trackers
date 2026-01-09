@@ -1,0 +1,5 @@
+__pycache__/
+Data/stats.json
+Data/check.json
+*.torrent
+api.py
