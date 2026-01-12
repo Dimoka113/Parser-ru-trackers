@@ -4,7 +4,7 @@ from defs import *
 from read_write import *
 
 
-def main(only_check=False, custom_post=None):
+def main(only_check=False, custom_post=None, download_limit: int = 0):
 
     if only_check:
         summ = 0
@@ -45,32 +45,38 @@ def main(only_check=False, custom_post=None):
             break
         try:
             info = parse_topic_page(tid)
-            ok = download_torrent(tid, info["name"])
-            if ok:
-                stats.append({
-                    tid: {
-                        "name": info["name"],
-                        "seeds": info["seeds"],
-                        "leech": info["leech"],
-                        "stat": info["stat"],
-                    }
-                })
-                white_check(stats)
-                append_ids_to_json(tid)
-                print(f"[+] {tid} OK")
-                done += 1
+            if download_limit == 0 or float(info["size"]) < download_limit:
+                ok = download_torrent(tid, info["name"])
+                if ok:
+                    stats.append({
+                        tid: {
+                            "name": info["name"],
+                            "seeds": info["seeds"],
+                            "leech": info["leech"],
+                            "stat": info["stat"],
+                            "size": info["size_str"]
+                        }
+                    })
+                    white_check(stats)
+                    append_ids_to_json(tid)
+                    print(f"[+] {tid} OK")
+                    done += 1
+
+                else:
+                    print(f"[!] {tid} пропущен!")
             else:
-                print(f"[!] {tid} пропущен")
+                print(f"[*!] {tid} Слишком большой." + f" ({info['size_str']})")
+                
         except Exception as e:
             print(f"[!] {tid} ошибка: {e}")
 
 if __name__ == "__main__":
-    FORUM_ID = 54
+    FORUM_ID = 2515
     check = False # Если истина, только проверка и добавление уже существуюзих торрентов в json
     if not check and FORUM_ID != 0:
         FORUM_ID = 54
         low_seed_ids = get_low_seed_topic_ids(FORUM_ID)
         print(f"Найдено тем с сидами < {SEEDS_LIMIT}: {len(low_seed_ids)}")
-        main(check, low_seed_ids) 
+        main(check, low_seed_ids, 0) 
     else:
         main(check)

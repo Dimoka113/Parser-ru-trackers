@@ -2,6 +2,17 @@ import os
 from Data.config import *
 from bs4 import BeautifulSoup
 
+def parse_data_size(string: str) -> int:
+    size, datatype = string.split(" ")
+
+    if datatype == "TB": return float(size) * 1024 * 1024 * 1024 * 1024
+    elif datatype == "GB": return float(size) * 1024 * 1024 * 1024
+    elif datatype == "MB": return float(size) * 1024 * 1024
+    elif datatype == "KB": return float(size) * 1024 * 1024
+    elif datatype == "B": return float(size)
+    else: raise Exception("Неизвестный тип данных!")
+
+
 def load_existing_torrent_ids():
     ids = set()
 
@@ -42,6 +53,8 @@ def get_topic_ids():
     return sorted(set(ids))
 
 
+
+
 def parse_topic_page(topic_id):
     url = BASE_URL + f"viewtopic.php?t={topic_id}"
     r = session.get(url)
@@ -64,15 +77,16 @@ def parse_topic_page(topic_id):
     leech = extract_int("span.leech")
 
     stat_td = soup.find("td", class_="borderless")
-    stat = stat_td.get_text(" ", strip=True) if stat_td else None
+    data = str(stat_td.get_text(" ", strip=True)).replace(" ", " ")
 
-    return {
-        "id": topic_id,
-        "name": name,
-        "seeds": seeds,
-        "leech": leech,
-        "stat": stat,
-    }
+    if data:
+        size = data.split("Размер: ")[1].split(" |")[0]
+        stat = data.split("\n\t\t")[1]
+
+
+        return {"id": topic_id, "name": name, "seeds": seeds, "leech": leech, "size": parse_data_size(size), "size_str": size, "stat": stat}
+    else:
+        return {"id": topic_id,"name": name,"seeds": seeds,"leech": leech,}
 
 
 def download_torrent(topic_id, name):
