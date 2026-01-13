@@ -22,9 +22,9 @@ os.makedirs(SAVE_DIR, exist_ok=True)
 session = requests.Session()
 session.headers.update(HEADERS)
 session.cookies.update(COOKIES)
-
+NAME_RANGE = 50
 FORUM_URL = "https://rutracker.me/forum/viewforum.php"
 
 PAGE_SIZE = 50
-MAX_PAGES = 100   # None = без лимита, иначе число страниц
+MAX_PAGES = PAGE_SIZE * 10   # None = без лимита, иначе число страниц
 SEEDS_LIMIT = 5

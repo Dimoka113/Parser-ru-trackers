@@ -91,7 +91,7 @@ def parse_topic_page(topic_id):
 
 def download_torrent(topic_id, name):
     safe_name = re.sub(r'[\\/*?:"<>|]', "_", name)
-    filename = f"{safe_name} {{rutracker-{topic_id}}}.torrent"
+    filename = f"{safe_name[0:NAME_RANGE]} (rutracker-{topic_id}).torrent"
     path = os.path.join(SAVE_DIR, filename)
 
     url = BASE_URL + f"dl.php?t={topic_id}"
@@ -182,7 +182,7 @@ def iter_forum_topics(forum_id):
 
     while True:
         if MAX_PAGES is not None and page >= MAX_PAGES: break
-        start = page * PAGE_SIZE
+        start = page + PAGE_SIZE
         topics = parse_forum_page(forum_id, start=start)
         if not topics: break
         new_on_page = 0
@@ -194,7 +194,7 @@ def iter_forum_topics(forum_id):
             yield t
 
         if new_on_page == 0: break
-        page += 1
+        page += PAGE_SIZE
 
 def get_low_seed_topic_ids(forum_id):
     ids = []
