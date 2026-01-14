@@ -79,3 +79,18 @@ if __name__ == "__main__":
         main(check, low_seed_ids, 0) 
     else:
         main(check)
+
+# Пример использования класса Qbit, для проверки "актуальности трекера"
+# В будующем весь проект перейдёт в класс qbit, и будет не актуально.
+# def trackers(i: str):
+#     for x in qb.get_torrent_trackers(i):
+#         if x["status"] != 2:
+#             gt = qb.get_torrent(i)
+#             print(i, x["status"], x["msg"], gt["comment"])
+#             print(qb.add_tags(["Стоят"], [i]))
+#         else:
+#             print(f"[{i}] Всё ок")
+
+# for i in qb.get_torrents_ids():
+#     s = Thread(target=trackers, args=(i,),)
+#     s.start()

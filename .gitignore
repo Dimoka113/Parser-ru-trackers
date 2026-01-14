@@ -3,3 +3,4 @@ Data/stats.json
 Data/check.json
 *.torrent
 api.py
+maintest.py
