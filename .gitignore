@@ -2,5 +2,5 @@ __pycache__/
 Data/stats.json
 Data/check.json
 *.torrent
-api.py
+Data/api.py
 maintest.py

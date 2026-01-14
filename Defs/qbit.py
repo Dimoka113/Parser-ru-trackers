@@ -4,46 +4,41 @@ import json
 from typing import Any
 from threading import Thread
 import time
+import pickle
+from Defs.rutracker import RuTracker
+from Data.config import Config
+from Defs.api import Api
+
 
 class Call(object):
+    try_limit = 5
+
     def _get(self, path: str) -> Any:
         url = f"{self.url}{path}"
-
         for attempt in range(self.try_limit+1):
             try:
                 r = self.s.get(url, timeout=10)
-
                 if r.status_code == 200:
                     return r.json()
-
                 last_error = f"HTTP {r.status_code}: {r.text}"
-
             except (requests.RequestException, ValueError) as e:
                 last_error = str(e)
-
             time.sleep(0.5)
-
         print(f"[!] GET {path} ошибка после 5 попыток: {last_error}")
         return None
 
 
     def _post(self, path: str, data: dict):
         url = f"{self.url}{path}"
-
-        for attempt in range(1, 6):
+        for attempt in range(self.try_limit+1):
             try:
                 r = self.s.post(url, data=data, timeout=10)
-
                 if r.status_code == 200:
                     return r.text
-
                 last_error = f"HTTP {r.status_code}: {r.text}"
-
             except requests.RequestException as e:
                 last_error = str(e)
-
             time.sleep(0.5)
-
         print(f"[!] POST {path} ошибка после 5 попыток: {last_error}")
         return None
 
@@ -53,14 +48,24 @@ class Qbit(Call):
     url = str()
     s = requests.Session()
     path_to_cokkies = str()
-    try_limit = 5
+    api = Api()
+    cfg = Config(api)
 
-    def __init__(self, url: str, path_to_cokkies: str):
-        self.url = url
+    rutracker = RuTracker(cfg)
+
+    def __init__(self, path_to_cokkies: str = "Data/qbit.cokkies.pkl"):
+        self.url = self.api.url
         self.path_to_cokkies = path_to_cokkies
 
     def auth(self, username: str, password: str, path="/api/v2/auth/login"):
         r = self._post(path, data={"username": username, "password": password})
+
+
+    def save_cokkies(self, path_to_cokkies: str):
+        with open(path_to_cokkies, "wb") as f:
+            pickle.dump(self.s.cookies, f)
+
+
 
     def version(self, path="/api/v2/app/version"):
         return self._get(path)
