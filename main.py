@@ -12,9 +12,9 @@ if __name__ == "__main__":
     if not check and FORUM_ID != 0:
         low_seed_ids = qbit.rutracker.get_low_seed_topic_ids(FORUM_ID)
         print(f"Найдено тем с сидами < {qbit.cfg.SEEDS_LIMIT}: {len(low_seed_ids)}")
-        qbit.rutracker.main(check, low_seed_ids, 0) 
+        qbit.rutracker.main(check, low_seed_ids, download_limit=0) 
     else:
-        qbit.rutracker.main(check)
+        qbit.rutracker.main(check, download_limit=0)
 
 
 
