@@ -4,6 +4,7 @@ from Data.config import Config
 from Defs.qofflife import *
 from Defs.read_write import *
 from threading import Thread
+from time import sleep
 
 
 class RuTracker(object):
@@ -62,6 +63,7 @@ class RuTracker(object):
             th = Thread(target=self.white_data_torrent, args=(tid, download_limit, stats, done,),)
             th.start()
             tt.append(th)
+            sleep(0.01)
 
         for thred in tt: thred.join()
 
@@ -69,6 +71,9 @@ class RuTracker(object):
         self.rw.append_ids_to_json(tid)
 
     def white_data_torrent(self, tid: int, download_limit: int, stats: list, done: int):
+        if done >= self.cfg.limit:
+            return False
+
         try:
             info = self.parse_topic_page(tid)
             if download_limit == 0 or float(info["size"]) < download_limit:
