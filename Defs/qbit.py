@@ -15,6 +15,7 @@ class Call(object):
 
     def _get(self, path: str) -> Any:
         url = f"{self.url}{path}"
+        sleep = 0.5
         for attempt in range(self.try_limit+1):
             try:
                 r = self.s.get(url, timeout=10)
@@ -23,13 +24,15 @@ class Call(object):
                 last_error = f"HTTP {r.status_code}: {r.text}"
             except (requests.RequestException, ValueError) as e:
                 last_error = str(e)
-            time.sleep(0.5)
+            time.sleep(sleep)
+            sleep = sleep + 0.5
         print(f"[!] GET {path} ошибка после 5 попыток: {last_error}")
         return None
 
 
     def _post(self, path: str, data: dict):
         url = f"{self.url}{path}"
+        sleep = 0.5
         for attempt in range(self.try_limit+1):
             try:
                 r = self.s.post(url, data=data, timeout=10)
@@ -38,7 +41,8 @@ class Call(object):
                 last_error = f"HTTP {r.status_code}: {r.text}"
             except requests.RequestException as e:
                 last_error = str(e)
-            time.sleep(0.5)
+            time.sleep(sleep)
+            sleep = sleep + 0.5
         print(f"[!] POST {path} ошибка после 5 попыток: {last_error}")
         return None
 
