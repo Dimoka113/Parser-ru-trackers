@@ -43,6 +43,7 @@ class RuTracker(object):
 
         done = 1
         stats = []
+        print(download_limit)
 
         for tid in topic_ids:
             tid = int(tid)
@@ -208,7 +209,7 @@ class RuTracker(object):
         return topics
 
 
-    def extract_counter(tr, classes):
+    def extract_counter(self, tr, classes):
         span = tr.find("span", class_=classes)
         if not span:
             return None
