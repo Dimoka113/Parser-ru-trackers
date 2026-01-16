@@ -1,6 +1,10 @@
 A simple Python script for parsing a large number of pages from rutracker.me forum topics
 ===========
 
+> [!WARNING]
+> <b>You have opened a branch that is no longer supported!</b> (read: <a href="https://github.com/Dimoka113/Parser-ru-trackers?tab=readme-ov-file#a-simple-python-script-for-parsing-a-large-number-of-pages-from-rutrackerme-forum-topics">Reason</a>)<br>
+> You can still use it, but please read this:
+
 <b>Warning</b>
 ===========
 I recommend setting a long delay between receiving torrents so that the ru-tracker doesn't get too angry.<br>
@@ -12,9 +16,9 @@ I recommend setting a long delay between receiving torrents so that the ru-track
 <b>ATTENTION</b>
 ===========
 
-> [!WARNING]
+> [!CAUTION]
 > IF YOU GET BANNED WHILE USING THIS SCRIPT, IT IS ENTIRELY YOUR RESPONSIBILITY.<br>
-> I am not responsible in any way, and I am not the creator/moderator of this forum.
+> I am not responsible in any way, and I am not the admin/moderator of this forum.
 
 ------
 
