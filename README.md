@@ -1,8 +1,26 @@
 A simple Python script for parsing a large number of pages from rutracker.me forum topics
 ===========
 
-How to install
+<b>Warning</b>
+===========
+I recommend setting a long delay between receiving torrents so that the ru-tracker doesn't get too angry.<br>
+
+> [!NOTE]
+> If you wish, it is best to check with one of the forum moderators to find out how many requests per second YOU can make to the forum.
+
+
+<b>ATTENTION</b>
+===========
+
+> [!WARNING]
+> IF YOU GET BANNED WHILE USING THIS SCRIPT, IT IS ENTIRELY YOUR RESPONSIBILITY.<br>
+> I am not responsible in any way, and I am not the creator/moderator of this forum.
+
 ------
+
+How to install
+===========
+
 * ..It is assumed that you already have an account on rutracker.me.
 * Download Python 3.11 (newer or older versions may be supported, but this has not been tested).
 * Download the latest version or clone the repository

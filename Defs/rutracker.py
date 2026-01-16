@@ -63,7 +63,7 @@ class RuTracker(object):
             th = Thread(target=self.white_data_torrent, args=(tid, download_limit, stats, done,),)
             th.start()
             tt.append(th)
-            sleep(0.01)
+            sleep(self.cfg.time_wait+0.5)
 
         for thred in tt: thred.join()
 
