@@ -18,7 +18,6 @@ class Config(object):
     EXIST_JSON_FILE = str()
     HEADERS = dict()
     TORRENT_ID_RE = re.compile(rb"viewtopic\.php\?t=(\d+)")
-    time_wait = 1
     NAME_RANGE = 50 # Лимит символов на файл торрента
     limit = 100 # Лимит файлов торрентов на один запуск
     PAGE_SIZE = 50

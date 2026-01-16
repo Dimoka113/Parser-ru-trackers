@@ -1,13 +1,23 @@
 A simple Python script for parsing a large number of pages from rutracker.me forum topics
 ===========
 
+> [!IMPORTANT]
+> ## <b>There are two branches in this repository:</b><br>
+> <b>Synchronous</b> (<a href="https://github.com/Dimoka113/Parser-ru-trackers/tree/main">current</a>)<br>
+> <b>Asynchronous</b> (<a href="https://github.com/Dimoka113/Parser-ru-trackers/tree/async-download">async-download</a>) (No longer supported)<br><br>
+> ## <b>Why are they separated?</b>
+> I want to support this project, but I don't want to harm the forum.<br>
+> Therefore, it was decided to abandon a large number of requests to the forum.<br>
+> Therefore, the "asynchronous" version remains for memory.<br>
+> You can still use it, but before you do, read the section below:<br>
+
+
 <b>Warning</b>
 ===========
 I recommend setting a long delay between receiving torrents so that the ru-tracker doesn't get too angry.<br>
 
 > [!NOTE]
 > If you wish, it is best to check with one of the forum moderators to find out how many requests per second YOU can make to the forum.
-
 
 <b>ATTENTION</b>
 ===========

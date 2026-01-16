@@ -3,8 +3,6 @@ from bs4 import BeautifulSoup
 from Data.config import Config
 from Defs.qofflife import *
 from Defs.read_write import *
-from threading import Thread
-from time import sleep
 
 
 class RuTracker(object):
@@ -45,12 +43,11 @@ class RuTracker(object):
 
         done = 1
         stats = []
-        tt = []
-
+        
         if len(topic_ids) == 0:
             print("Не найдено тем!")
             return False
-        
+
         for tid in topic_ids:
             tid = int(tid)
 
@@ -59,44 +56,32 @@ class RuTracker(object):
                 continue
             if self.cfg.limit and done > self.cfg.limit:
                 break
+            try:
+                info = self.parse_topic_page(tid)
+                if download_limit == 0 or float(info["size"]) < download_limit:
+                    ok = self.download_torrent(tid, info["name"])
+                    if ok:
+                        stats.append({
+                            tid: {
+                                "name": info["name"],
+                                "seeds": info["seeds"],
+                                "leech": info["leech"],
+                                "stat": info["stat"],
+                                "size": info["size_str"]
+                            }
+                        })
+                        self.rw.white_check(stats)
+                        self.rw.append_ids_to_json(tid)
+                        print(f"[+] {tid} OK")
+                        done += 1
 
-            th = Thread(target=self.white_data_torrent, args=(tid, download_limit, stats, done,),)
-            th.start()
-            tt.append(th)
-            sleep(self.cfg.time_wait+0.5)
-
-        for thred in tt: thred.join()
-
-        self.rw.white_check(stats)
-        self.rw.append_ids_to_json(tid)
-
-    def white_data_torrent(self, tid: int, download_limit: int, stats: list, done: int):
-        if done >= self.cfg.limit:
-            return False
-
-        try:
-            info = self.parse_topic_page(tid)
-            if download_limit == 0 or float(info["size"]) < download_limit:
-                ok = self.download_torrent(tid, info["name"])
-                if ok:
-                    stats.append({
-                        tid: {
-                            "name": info["name"],
-                            "seeds": info["seeds"],
-                            "leech": info["leech"],
-                            "stat": info["stat"],
-                            "size": info["size_str"]
-                        }
-                    })
-                    print(f"[+] {tid} OK")
-                    done += 1
+                    else:
+                        print(f"[!] {tid} пропущен!")
                 else:
-                    print(f"[!] {tid} пропущен!")
-            else:
-                print(f"[*!] {tid} Слишком большой." + f" ({info['size_str']})")
-                
-        except Exception as e:
-            print(f"[!] {tid} ошибка: {e}")
+                    print(f"[*!] {tid} Слишком большой." + f" ({info['size_str']})")
+                    
+            except Exception as e:
+                print(f"[!] {tid} ошибка: {e}")
 
     def load_existing_torrent_ids(self):
         ids = set()
