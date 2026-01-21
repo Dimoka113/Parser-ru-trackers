@@ -8,7 +8,7 @@ import pickle
 from Defs.rutracker import RuTracker
 from Data.config import Config
 from Defs.api import Api
-
+from requests.auth import HTTPBasicAuth
 
 class Call(object):
     try_limit = 5
@@ -54,16 +54,17 @@ class Qbit(Call):
     path_to_cokkies = str()
     api = Api()
     cfg = Config(api)
-
+    httpBA = None
     rutracker = RuTracker(cfg)
 
-    def __init__(self, path_to_cokkies: str = "Data/qbit.cokkies.pkl"):
+    def __init__(self, httpBA: HTTPBasicAuth = None, path_to_cokkies: str = "Data/qbit.cokkies.pkl"):
         self.url = self.api.url
         self.path_to_cokkies = path_to_cokkies
+        self.httpBA = httpBA
 
     def auth(self, username: str, password: str, path="/api/v2/auth/login"):
+        self.s.auth = self.httpBA
         r = self._post(path, data={"username": username, "password": password})
-
 
     def save_cokkies(self, path_to_cokkies: str):
         with open(path_to_cokkies, "wb") as f:
