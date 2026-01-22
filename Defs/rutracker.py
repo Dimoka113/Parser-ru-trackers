@@ -248,6 +248,20 @@ class RuTracker(object):
 
         return topics
 
+    def get_subforums(self, forum_id: int):
+        r = self.cfg.session.get(self.cfg.FORUM_URL, params={"f": forum_id})
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, "html.parser")
+        subforums = []
+        for h4 in soup.find_all("h4", class_="forumlink"):
+            a = h4.find("a", href=True)
+            if not a:
+                continue
+            m = re.search(r"viewforum\.php\?f=(\d+)", a["href"])
+            if m:
+                subforums.append(int(m.group(1)))
+        return list(set(subforums))
+
     def iter_forum_topics(self, forum_id):
         seen = set()
         page = 0
@@ -267,11 +281,36 @@ class RuTracker(object):
 
             if new_on_page == 0: break
             page += self.cfg.PAGE_SIZE
+            
+    def iter_forum_topics_recursive(self, forum_id: int, visited_forums=None):
+        if visited_forums is None:
+            visited_forums = set()
+
+        if forum_id in visited_forums:
+            return
+
+        visited_forums.add(forum_id)
+        self.log.debug(f"[->] Обход форума: {forum_id}")
+
+        for topic in self.iter_forum_topics(forum_id):
+            yield topic
+
+        try:
+            subforums = self.get_subforums(forum_id)
+        except Exception as e:
+            self.log.warn(f"[!] Не удалось получить подфорумы f={forum_id}: {e}")
+            return
+
+        for sub_id in subforums:
+            yield from self.iter_forum_topics_recursive(
+                sub_id,
+                visited_forums
+            )
 
     def get_low_seed_topic_ids(self, forum_id):
         ids = []
 
-        for topic in self.iter_forum_topics(forum_id):
+        for topic in self.iter_forum_topics_recursive(forum_id):
             seeds = topic["seeds"]
             if seeds is None: continue
             if seeds < self.cfg.SEEDS_LIMIT: ids.append(topic["id"])
