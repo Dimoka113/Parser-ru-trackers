@@ -9,14 +9,17 @@ from Defs.rutracker import RuTracker
 from Data.config import Config
 from Defs.api import Api
 from requests.auth import HTTPBasicAuth
+from Defs.logger import Logger
+
 
 class Call(object):
     try_limit = 5
+    log: Logger = Logger("Caller")
 
     def _get(self, path: str) -> Any:
         url = f"{self.url}{path}"
         sleep = 0.5
-        for attempt in range(self.try_limit+1):
+        for _ in range(self.try_limit+1):
             try:
                 r = self.s.get(url, timeout=10)
                 if r.status_code == 200:
@@ -26,14 +29,14 @@ class Call(object):
                 last_error = str(e)
             time.sleep(sleep)
             sleep = sleep + 0.5
-        print(f"[!] GET {path} ошибка после 5 попыток: {last_error}")
+        self.log.warn(f"[!] GET {path} ошибка после 5 попыток: {last_error}")
         return None
 
 
     def _post(self, path: str, data: dict):
         url = f"{self.url}{path}"
         sleep = 0.5
-        for attempt in range(self.try_limit+1):
+        for _ in range(self.try_limit+1):
             try:
                 r = self.s.post(url, data=data, timeout=10)
                 if r.status_code == 200:
@@ -43,7 +46,7 @@ class Call(object):
                 last_error = str(e)
             time.sleep(sleep)
             sleep = sleep + 0.5
-        print(f"[!] POST {path} ошибка после 5 попыток: {last_error}")
+        self.log.warn(f"[!] POST {path} ошибка после 5 попыток: {last_error}")
         return None
 
 
@@ -53,14 +56,19 @@ class Qbit(Call):
     s = requests.Session()
     path_to_cokkies = str()
     api = Api()
-    cfg = Config(api)
     httpBA = None
-    rutracker = RuTracker(cfg)
+    rutracker: RuTracker = None
+    cfg: Config = None
+    log: Logger = Logger("Qbit")
 
-    def __init__(self, httpBA: HTTPBasicAuth = None, path_to_cokkies: str = "Data/qbit.cokkies.pkl"):
+    def __init__(self, FOR_ID: int, httpBA: HTTPBasicAuth = None, path_to_cokkies: str = "Data/qbit.cokkies.pkl"):
         self.url = self.api.url
         self.path_to_cokkies = path_to_cokkies
         self.httpBA = httpBA
+        self.cfg = Config(FOR_ID, self.api)
+        self.rutracker = RuTracker(self.cfg)
+        self.log.debug(self.cfg.HEADERS)
+
 
     def auth(self, username: str, password: str, path="/api/v2/auth/login"):
         self.s.auth = self.httpBA

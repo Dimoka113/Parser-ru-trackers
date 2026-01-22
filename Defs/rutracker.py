@@ -3,11 +3,13 @@ from bs4 import BeautifulSoup
 from Data.config import Config
 from Defs.qofflife import *
 from Defs.read_write import *
+from Defs.logger import Logger
 
 
 class RuTracker(object):
     cfg: Config = None
     rw: RW = None
+    log: Logger = Logger("RuTracker")
 
     def __init__(self, cfg: Config):
         self.cfg = cfg
@@ -18,26 +20,26 @@ class RuTracker(object):
         if only_check:
             summ = 0
             existing_ids = self.load_existing_torrent_ids()
-            print(f"Уже есть торрентов: {len(existing_ids)}")
+            self.log.debug(f"Уже есть торрентов: {len(existing_ids)}")
             for i in existing_ids:
                 if self.rw.append_ids_to_json(int(i)):
                     summ += 1
 
-            print(f"Добавлено в json {summ} торрентов")
+            self.log.debug(f"Добавлено в json {summ} торрентов")
             return
 
         if custom_post is not None:
             topic_ids = custom_post
-            print(f"Используется custom_post, тем: {len(topic_ids)}")
+            self.log.debug(f"Используется custom_post, тем: {len(topic_ids)}")
         else:
             topic_ids = self.get_topic_ids()
-            print(f"Найдено тем: {len(topic_ids)}", f"Лимит трекеров: {self.cfg.limit}")
+            self.log.info(f"Найдено тем: {len(topic_ids)}", f"Лимит трекеров: {self.cfg.limit}")
 
         existing_ids = self.load_existing_torrent_ids()
-        print(f"Уже есть торрентов в директории: {len(existing_ids)}")
+        self.log.debug(f"Уже есть торрентов в директории: {len(existing_ids)}")
 
         jsondata = self.rw.load_ids_from_json()
-        print(f"Уже есть торрентов в json: {len(jsondata)}")
+        self.log.debug(f"Уже есть торрентов в json: {len(jsondata)}")
 
         data = set(map(int, jsondata)) | set(map(int, existing_ids))
 
@@ -45,14 +47,14 @@ class RuTracker(object):
         stats = []
         
         if len(topic_ids) == 0:
-            print("Не найдено тем!")
+            self.log.crit("Не найдено тем!")
             return False
 
         for tid in topic_ids:
             tid = int(tid)
 
             if tid in data:
-                print(f"[=] {tid} уже есть — пропуск")
+                self.log.debug(f"[=] {tid} уже есть — пропуск")
                 continue
             if self.cfg.limit and done > self.cfg.limit:
                 break
@@ -72,16 +74,16 @@ class RuTracker(object):
                         })
                         self.rw.white_check(stats)
                         self.rw.append_ids_to_json(tid)
-                        print(f"[+] {tid} OK")
+                        self.log.info(f"[+] {tid} OK")
                         done += 1
 
                     else:
-                        print(f"[!] {tid} пропущен!")
+                        self.log.warn(f"[!] {tid} пропущен!")
                 else:
-                    print(f"[*!] {tid} Слишком большой." + f" ({info['size_str']})")
+                    self.log.debug(f"[*!] {tid} Слишком большой." + f" ({info['size_str']})")
                     
             except Exception as e:
-                print(f"[!] {tid} ошибка: {e}")
+                self.log.warn(f"[!] {tid} ошибка: {e}")
 
     def load_existing_torrent_ids(self):
         ids = set()
@@ -168,7 +170,7 @@ class RuTracker(object):
         r = self.cfg.session.get(url)
 
         if r.headers.get("Content-Type", "").startswith("text/html"):
-            print(f"[!] {topic_id}: не торрент")
+            self.log.warn(f"[!] {topic_id}: не торрент")
             return False
 
         with open(path, "wb") as f:
@@ -233,7 +235,7 @@ class RuTracker(object):
         table = soup.find("table",class_="vf-table vf-tor forumline forum")
 
         if not table:
-            print(f"[!] Таблица форума не найдена (start={start})"); return []
+            self.log.crit(f"[!] Таблица форума не найдена (start={start})"); return []
         topics = []
 
         for tr in table.find_all("tr", id=re.compile(r"^tr-\d+")):
