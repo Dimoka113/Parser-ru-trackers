@@ -235,7 +235,13 @@ class RuTracker(object):
         table = soup.find("table",class_="vf-table vf-tor forumline forum")
 
         if not table:
-            self.log.crit(f"[!] Таблица форума не найдена (start={start})"); return []
+            if "Подходящих тем или сообщений не найдено" in r.text:
+                return False
+            else:
+                self.log.crit(f"[!] Таблица форума не найдена (start={start})")
+                self.log.debug(str(soup))
+                return []
+            
         topics = []
 
         for tr in table.find_all("tr", id=re.compile(r"^tr-\d+")):
@@ -313,5 +319,8 @@ class RuTracker(object):
         for topic in self.iter_forum_topics_recursive(forum_id):
             seeds = topic["seeds"]
             if seeds is None: continue
-            if seeds < self.cfg.SEEDS_LIMIT: ids.append(topic["id"])
+            
+            if self.cfg.SEEDS_LIMIT == -1: ids.append(topic["id"])
+            elif seeds <= self.cfg.SEEDS_LIMIT: ids.append(topic["id"])
+
         return ids

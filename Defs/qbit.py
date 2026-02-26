@@ -61,7 +61,7 @@ class Qbit(Call):
     cfg: Config = None
     log: Logger = Logger("Qbit")
 
-    def __init__(self, FOR_ID: int, httpBA: HTTPBasicAuth = None, path_to_cokkies: str = "Data/qbit.cokkies.pkl"):
+    def __init__(self, FOR_ID: int = None, httpBA: HTTPBasicAuth = None, path_to_cokkies: str = "Data/qbit.cokkies.pkl"):
         self.url = self.api.url
         self.path_to_cokkies = path_to_cokkies
         self.httpBA = httpBA

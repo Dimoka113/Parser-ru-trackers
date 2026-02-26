@@ -9,13 +9,15 @@ Logger.level(Logger.types.DEBUG)
 
 if __name__ == "__main__":
     FORUM_ID = 0 # Айди форума, откуда парсить торренты (если 0, используется альтернативная схема для "красной книги")
-    download_limit = 0 # Лимит размера конечного торрента (в байтах)
+    download_limit = 0  #512*1024*1024 # Лимит размера конечного торрента (в байтах)
+    Config.SEEDS_LIMIT = 5 # Максимальное кол-во сидов (передайте -1, чтобы отключить проверку)
+    Config.limit = 0 # Максимальное кол-во торрентов для скачивания за запуск
     
     log = Logger("Main"); qbit = Qbit(FORUM_ID)
     check = False # Если истина, только проверка и добавление уже существуюзих торрентов в json
     if not check and FORUM_ID != 0:
         low_seed_ids = qbit.rutracker.get_low_seed_topic_ids(FORUM_ID)
-        log.debug(f"Найдено тем с сидами < {qbit.cfg.SEEDS_LIMIT}: {len(low_seed_ids)}")
+        log.debug(f"Найдено тем с сидами <= {qbit.cfg.SEEDS_LIMIT}: {len(low_seed_ids)}")
         qbit.rutracker.main(check, low_seed_ids, download_limit=download_limit) 
     else:
         qbit.rutracker.main(check, download_limit=download_limit)

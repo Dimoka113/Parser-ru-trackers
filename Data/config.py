@@ -21,10 +21,10 @@ class Config(object):
     EXIST_JSON_FILE = str()
     TORRENT_ID_RE = re.compile(rb"viewtopic\.php\?t=(\d+)")
     NAME_RANGE = 50 # Лимит символов на файл торрента
-    limit = 100 # Лимит файлов торрентов на один запуск
+    limit = 0
     PAGE_SIZE = 50
     MAX_PAGES = PAGE_SIZE * 10   # None = без лимита, иначе число страниц
-    SEEDS_LIMIT = 5
+    SEEDS_LIMIT = 0 # (<= Сидов)
     SAVE_DIR = "torrents"
     STATS_FILE = "Data/stats.json"
     EXIST_JSON_FILE = "Data/check.json"
