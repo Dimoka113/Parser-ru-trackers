@@ -107,7 +107,7 @@ class RuTracker(object):
 
 
     def get_topic_ids(self):
-        r = self.cfg.session.get(self.cfg.TOPIC_URL)
+        r = self.cfg.session.get(self.cfg.REDBOOK_URL)
         r.raise_for_status()
 
         soup = BeautifulSoup(r.text, "html.parser")

@@ -15,7 +15,8 @@ class Config(object):
         self.HEADERS = {"User-Agent": self.api.UserAgent, "Referer": TOPIC_URL,}
         self.session.headers.update(self.HEADERS)
 
-    FORUM_URL = BASE_URL+ "viewforum.php"
+    REDBOOK_URL = BASE_URL + "viewtopic.php?t=6579518" 
+    FORUM_URL = BASE_URL + "viewforum.php"
     SAVE_DIR = str()
     STATS_FILE = str()
     EXIST_JSON_FILE = str()
