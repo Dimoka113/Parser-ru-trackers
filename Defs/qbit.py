@@ -97,3 +97,11 @@ class Qbit(Call):
     
     def add_tags(self, tags: list[str], hashes: list[str], path="/api/v2/torrents/addTags"):
         return self._post(path, data={"tags": tags, "hashes": hashes})
+
+    def reannounce_torrents(self, hashes: list[str], path="/api/v2/torrents/reannounce"):
+        return self._post(path, data={"hashes": hashes})
+    
+    def stop_torrents(self, hashes: list[str], path="/api/v2/torrents/stop"):
+        return self._post(path, data={"hashes": hashes})
+    def start_torrents(self, hashes: list[str], path="/api/v2/torrents/start"):
+        return self._post(path, data={"hashes": hashes})
